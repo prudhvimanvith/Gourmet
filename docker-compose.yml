@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: recipe_manager_db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: recipe_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - recipe_net
+
+  redis:
+    image: redis:alpine
+    container_name: recipe_manager_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - recipe_net
+
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: recipe_manager_frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:3000/api/v1
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - recipe_net
+
+networks:
+  recipe_net:
+    driver: bridge
+
+volumes:
+  pgdata:
