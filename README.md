@@ -2,8 +2,6 @@
 
 A comprehensive, smart restaurant management system designed to handle complex multi-stage recipes, real-time inventory tracking, and point-of-sale operations.
 
-![Gourmet POS Banner](https://images.unsplash.com/photo-1556740738-b6a63e27c4df?auto=format&fit=crop&q=80&w=1000)
-
 ## 🚀 Features
 
 ### 🥗 Smart Recipe Builder
