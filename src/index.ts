@@ -26,7 +26,7 @@ app.get('/', (req, res) => {
     res.json({ message: 'Recipe Management System API is running' });
 });
 
-import { query } from './config/db';
+import { query, getCleanDbUrl } from './config/db';
 
 app.get('/api/health', async (req, res) => {
     try {
@@ -39,7 +39,8 @@ app.get('/api/health', async (req, res) => {
                 environment: process.env.NODE_ENV,
                 debug: {
                     has_db_url: !!process.env.DATABASE_URL,
-                    db_url_start: process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 15) + '...' : 'undefined'
+                    db_url_start: process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 15) + '...' : 'undefined',
+                    cleaned_db_url_start: getCleanDbUrl(process.env.DATABASE_URL)?.substring(0, 15) + '...'
                 }
             }
         });
@@ -54,6 +55,7 @@ app.get('/api/health', async (req, res) => {
                 debug: {
                     has_db_url: !!process.env.DATABASE_URL,
                     db_url_start: process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 20) + '...' : 'undefined',
+                    cleaned_db_url_start: getCleanDbUrl(process.env.DATABASE_URL)?.substring(0, 20) + '...',
                     error_code: error.code,
                     syscall: error.syscall,
                     hostname: error.hostname
