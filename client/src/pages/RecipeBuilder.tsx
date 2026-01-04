@@ -283,6 +283,15 @@ const RecipeBuilder = () => {
 
                         {/* Ingredients List */}
                         <div className="space-y-3">
+                            {ingredients.length > 0 && (
+                                <div className="grid grid-cols-12 gap-4 px-4 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                                    <div className="col-span-1">#</div>
+                                    <div className="col-span-5">Ingredient</div>
+                                    <div className="col-span-2 text-center">Qty</div>
+                                    <div className="col-span-2 text-center">Waste %</div>
+                                    <div className="col-span-2"></div>
+                                </div>
+                            )}
                             {ingredients.map((row, idx) => (
                                 <motion.div
                                     key={row.item.id}
