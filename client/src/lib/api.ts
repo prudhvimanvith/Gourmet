@@ -81,7 +81,7 @@ export const api = {
         if (!res.ok) {
             const err = await res.json().catch(() => ({ error: 'Failed to place order' }));
             throw new Error(err.error || err.message || 'Failed to place order');
-        },
+        }
         return res.json();
     },
 
