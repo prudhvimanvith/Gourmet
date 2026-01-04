@@ -7,10 +7,11 @@ dotenv.config();
 // Helper to clean the connection string if user pasted the 'psql' command
 const getCleanDbUrl = (url: string | undefined): string | undefined => {
     if (!url) return undefined;
+    let clean = url.trim();
     // Remove "psql " key/command if present
-    let clean = url.replace(/^psql\s+/, '');
-    // Remove surrounding quotes
-    clean = clean.replace(/^['"]|['"]$/g, '');
+    clean = clean.replace(/^psql\s+/, '');
+    // Remove surrounding quotes and any whitespace outside them
+    clean = clean.replace(/^['"]|['"]$/g, '').trim();
     return clean;
 };
 
