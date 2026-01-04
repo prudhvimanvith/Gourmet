@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, type Item } from '../lib/api';
-import { Search, Plus, AlertTriangle, Package, Edit, Trash2, RefreshCw, X, Save } from 'lucide-react';
+import { Search, Plus, AlertTriangle, Edit, Trash2, RefreshCw, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import clsx from 'clsx';
 

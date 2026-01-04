@@ -15,7 +15,6 @@ const Settings = () => {
     const [currency, setCurrency] = useState('$');
 
     const [users, setUsers] = useState<any[]>([]);
-    const [loadingUsers, setLoadingUsers] = useState(false);
     const [showAddUser, setShowAddUser] = useState(false);
     const [newUser, setNewUser] = useState({ username: '', password: '', full_name: '', email: '', role: 'CASHIER' });
     const [resetTarget, setResetTarget] = useState<any>(null); // For Admin Reset
@@ -59,7 +58,6 @@ const Settings = () => {
     }, [activeTab]);
 
     const fetchUsers = async () => {
-        setLoadingUsers(true);
         try {
             const token = localStorage.getItem('token');
             const res = await fetch(endpoints.users, {
@@ -69,8 +67,6 @@ const Settings = () => {
             if (res.ok) setUsers(data);
         } catch (err) {
             console.error(err);
-        } finally {
-            setLoadingUsers(false);
         }
     };
 

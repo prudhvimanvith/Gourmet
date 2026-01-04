@@ -1,16 +1,15 @@
-import { Trash2, ChevronRight, ShoppingCart } from 'lucide-react';
+import { ChevronRight, ShoppingCart } from 'lucide-react';
 import type { Item } from '../../lib/api';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface CartSidebarProps {
     cart: { item: Item; qty: number }[];
-    onRemove: (itemId: string) => void;
     onUpdateQty: (itemId: string, delta: number) => void;
     onCheckout: () => void;
     isProcessing: boolean;
 }
 
-const CartSidebar = ({ cart, onRemove, onUpdateQty, onCheckout, isProcessing }: CartSidebarProps) => {
+const CartSidebar = ({ cart, onUpdateQty, onCheckout, isProcessing }: CartSidebarProps) => {
     const total = cart.reduce((acc, curr) => acc + (Number(curr.item.selling_price || 0) * curr.qty), 0);
 
     return (

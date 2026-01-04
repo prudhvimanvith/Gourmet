@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { Plus, Save, Search, Trash2, Edit3, X, ChefHat, ArrowRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
+import { Plus, Save, Search, Trash2 } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, type Item } from '../lib/api';
 import clsx from 'clsx';
