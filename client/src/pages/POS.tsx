@@ -31,10 +31,6 @@ const POS = () => {
         });
     };
 
-    const removeFromCart = (itemId: string) => {
-        setCart(prev => prev.filter(i => i.item.id !== itemId));
-    };
-
     const updateQuantity = (itemId: string, delta: number) => {
         setCart(prev => {
             return prev.map(line => {
@@ -89,7 +85,6 @@ const POS = () => {
                         ...line,
                         item: items.find(i => i.id === line.item.id) || line.item
                     }))}
-                    onRemove={removeFromCart}
                     onUpdateQty={updateQuantity}
                     onCheckout={handleCheckout}
                     isProcessing={createOrderMutation.isPending}
