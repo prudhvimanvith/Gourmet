@@ -36,7 +36,11 @@ app.get('/api/health', async (req, res) => {
             timestamp: new Date(),
             services: {
                 database: 'connected',
-                environment: process.env.NODE_ENV
+                environment: process.env.NODE_ENV,
+                debug: {
+                    has_db_url: !!process.env.DATABASE_URL,
+                    db_url_start: process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 15) + '...' : 'undefined'
+                }
             }
         });
     } catch (error: any) {
@@ -46,7 +50,13 @@ app.get('/api/health', async (req, res) => {
             timestamp: new Date(),
             services: {
                 database: 'disconnected',
-                error: error.message
+                error: error.message,
+                debug: {
+                    has_db_url: !!process.env.DATABASE_URL,
+                    error_code: error.code,
+                    syscall: error.syscall,
+                    hostname: error.hostname
+                }
             }
         });
     }
