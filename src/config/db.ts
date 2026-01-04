@@ -4,9 +4,21 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Production config with DATABASE_URL
-const pool = process.env.DATABASE_URL
+// Helper to clean the connection string if user pasted the 'psql' command
+const getCleanDbUrl = (url: string | undefined): string | undefined => {
+    if (!url) return undefined;
+    // Remove "psql " key/command if present
+    let clean = url.replace(/^psql\s+/, '');
+    // Remove surrounding quotes
+    clean = clean.replace(/^['"]|['"]$/g, '');
+    return clean;
+};
+
+const dbUrl = getCleanDbUrl(process.env.DATABASE_URL);
+
+const pool = dbUrl
     ? new Pool({
-        connectionString: process.env.DATABASE_URL,
+        connectionString: dbUrl,
         ssl: { rejectUnauthorized: false }
     })
     : new Pool({
