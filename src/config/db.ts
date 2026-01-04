@@ -5,7 +5,7 @@ dotenv.config();
 
 // Production config with DATABASE_URL
 // Helper to clean the connection string if user pasted the 'psql' command
-const getCleanDbUrl = (url: string | undefined): string | undefined => {
+export const getCleanDbUrl = (url: string | undefined): string | undefined => {
     if (!url) return undefined;
     let clean = url.trim();
     // Remove "psql " key/command if present
