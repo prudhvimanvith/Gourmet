@@ -53,6 +53,7 @@ app.get('/api/health', async (req, res) => {
                 error: error.message,
                 debug: {
                     has_db_url: !!process.env.DATABASE_URL,
+                    db_url_start: process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 20) + '...' : 'undefined',
                     error_code: error.code,
                     syscall: error.syscall,
                     hostname: error.hostname
