@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ReactNode } from 'react';
 
 import Layout from './components/layout/Layout';
 import Dashboard from './pages/Dashboard';
@@ -18,7 +18,7 @@ import Settings from './pages/Settings';
 const queryClient = new QueryClient();
 
 // Authorization Wrapper
-const ProtectedRoute = ({ children, roles }: { children: JSX.Element, roles?: string[] }) => {
+const ProtectedRoute = ({ children, roles }: { children: ReactNode, roles?: string[] }) => {
   const { isAuthenticated, user, token } = useAuth();
   const location = useLocation();
 
@@ -30,7 +30,7 @@ const ProtectedRoute = ({ children, roles }: { children: JSX.Element, roles?: st
     return <div className="flex h-screen items-center justify-center text-slate-400">Access Denied: Insufficient Permissions</div>;
   }
 
-  return children;
+  return <>{children}</>;
 };
 
 function App() {
