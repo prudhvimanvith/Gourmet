@@ -4,11 +4,13 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
     user: process.env.POSTGRES_USER || 'admin',
     host: process.env.POSTGRES_HOST || 'localhost',
     database: process.env.POSTGRES_DB || 'recipe_db',
     password: process.env.POSTGRES_PASSWORD || 'password123',
     port: parseInt(process.env.POSTGRES_PORT || '5432'),
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 
 pool.on('error', (err) => {
