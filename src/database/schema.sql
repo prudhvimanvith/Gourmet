@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS items (
     current_stock DECIMAL(10, 4) DEFAULT 0 CHECK (current_stock >= 0),
     min_threshold DECIMAL(10, 4) DEFAULT 10,
     cost_per_unit DECIMAL(10, 2) DEFAULT 0,
+    selling_price DECIMAL(10, 2) DEFAULT 0,
     is_auto_explode BOOLEAN DEFAULT FALSE, -- If TRUE, automatically deduct ingredients on sale (for phantom/JIT items)
     created_at TIMESTAMP DEFAULT NOW()
 );
@@ -73,3 +74,15 @@ CREATE TABLE IF NOT EXISTS inventory_transactions (
 CREATE INDEX IF NOT EXISTS idx_items_type ON items(type);
 CREATE INDEX IF NOT EXISTS idx_recipe_output ON recipes(output_item_id);
 CREATE INDEX IF NOT EXISTS idx_inv_item_date ON inventory_transactions(item_id, created_at);
+
+-- Users & Roles
+CREATE TYPE user_role AS ENUM ('ADMIN', 'CHEF', 'CASHIER');
+
+CREATE TABLE IF NOT EXISTS users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    role user_role NOT NULL DEFAULT 'CASHIER',
+    full_name VARCHAR(100),
+    created_at TIMESTAMP DEFAULT NOW()
+);

@@ -1,29 +1,33 @@
 import { LayoutDashboard, Store, Package, ChefHat, Settings, LogOut, ScrollText } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
-import clsx from 'clsx'; // Using clsx for conditional classes
+import clsx from 'clsx';
+import { useAuth } from '../../context/AuthContext';
 
 const Sidebar = () => {
     const location = useLocation();
+    const { user, logout } = useAuth();
 
-    const navItems = [
-        { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
-        { icon: Store, label: 'POS Terminal', path: '/pos' },
-        { icon: ScrollText, label: 'Recipes', path: '/recipes' },
-        { icon: ChefHat, label: 'Kitchen / Prep', path: '/prep' },
-        { icon: Package, label: 'Inventory', path: '/items' },
-        { icon: Settings, label: 'Settings', path: '/settings' },
+    const allNavItems = [
+        { icon: LayoutDashboard, label: 'Dashboard', path: '/', roles: ['ADMIN', 'CHEF', 'CASHIER'] },
+        { icon: Store, label: 'POS Terminal', path: '/pos', roles: ['ADMIN', 'CASHIER'] },
+        { icon: ScrollText, label: 'Recipes', path: '/recipes', roles: ['ADMIN', 'CHEF'] },
+        { icon: ChefHat, label: 'Kitchen / Prep', path: '/prep', roles: ['ADMIN', 'CHEF'] },
+        { icon: Package, label: 'Inventory', path: '/items', roles: ['ADMIN', 'CHEF'] },
+        { icon: Settings, label: 'Settings', path: '/settings', roles: ['ADMIN', 'CHEF', 'CASHIER'] },
     ];
 
+    const navItems = allNavItems.filter(item => user && item.roles.includes(user.role));
+
     return (
-        <aside className="flex h-screen w-20 flex-col items-center border-r border-slate-800 bg-slate-900/95 py-8 backdrop-blur-xl transition-all duration-300 hover:w-64 group z-50">
+        <aside className="flex h-screen w-20 flex-col items-center border-r border-slate-200 bg-white/70 py-8 backdrop-blur-xl transition-all duration-300 hover:w-64 group z-50 shadow-glass">
 
             {/* Brand */}
             <div className="mb-12 flex items-center justify-center gap-3 overflow-hidden whitespace-nowrap px-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 shadow-lg shadow-emerald-500/20">
-                    <span className="text-xl font-bold text-slate-900">G</span>
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary-400 to-primary-600 shadow-lg shadow-primary-500/20 text-white">
+                    <span className="text-xl font-bold">G</span>
                 </div>
-                <span className="hidden text-xl font-bold tracking-wider text-slate-100 opacity-0 transition-all group-hover:block group-hover:opacity-100">
-                    GOURMET<span className="text-emerald-400">POS</span>
+                <span className="hidden text-xl font-bold tracking-wider text-slate-800 opacity-0 transition-all group-hover:block group-hover:opacity-100">
+                    GOURMET<span className="text-primary-500">POS</span>
                 </span>
             </div>
 
@@ -38,13 +42,13 @@ const Sidebar = () => {
                             className={clsx(
                                 "group/item relative flex h-12 w-full items-center gap-4 overflow-hidden rounded-xl px-4 transition-all",
                                 isActive
-                                    ? "bg-emerald-500/10 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.1)]"
-                                    : "text-slate-400 hover:bg-slate-800 hover:text-slate-100"
+                                    ? "bg-primary-50 text-primary-600 shadow-sm ring-1 ring-primary-200"
+                                    : "text-slate-500 hover:bg-white hover:text-slate-900 hover:shadow-sm"
                             )}
                         >
                             {/* Active Indicator Line */}
                             {isActive && (
-                                <div className="absolute left-0 h-8 w-1 rounded-r-full bg-emerald-400" />
+                                <div className="absolute left-0 h-6 w-1 rounded-r-full bg-primary-500" />
                             )}
 
                             <item.icon className={clsx("h-6 w-6 shrink-0 transition-transform", isActive && "scale-110")} />
@@ -59,7 +63,13 @@ const Sidebar = () => {
 
             {/* Footer / User */}
             <div className="mt-auto w-full px-2">
-                <button className="flex h-12 w-full items-center gap-4 overflow-hidden rounded-xl px-4 text-rose-400 hover:bg-rose-500/10">
+                <div className="mb-2 hidden px-4 text-xs text-slate-400 font-medium group-hover:block uppercase tracking-wider">
+                    <span className="text-primary-600">{user?.username}</span> Workspace
+                </div>
+                <button
+                    onClick={logout}
+                    className="flex h-12 w-full items-center gap-4 overflow-hidden rounded-xl px-4 text-critical hover:bg-red-50"
+                >
                     <LogOut className="h-6 w-6 shrink-0" />
                     <span className="hidden whitespace-nowrap font-medium opacity-0 group-hover:block group-hover:opacity-100">
                         Logout

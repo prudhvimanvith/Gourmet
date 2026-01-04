@@ -6,9 +6,9 @@ export class RecipeService {
     // Create a new Item (Ingredient, Dish, etc.)
     public async createItem(data: Omit<Item, 'id' | 'created_at'>): Promise<string> {
         const res = await query(
-            `INSERT INTO items (name, sku, type, unit, cost_per_unit, is_auto_explode) 
-       VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
-            [data.name, data.sku, data.type, data.unit, data.cost_per_unit, data.is_auto_explode]
+            `INSERT INTO items (name, sku, type, unit, cost_per_unit, selling_price, is_auto_explode) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
+            [data.name, data.sku, data.type, data.unit, data.cost_per_unit, data.selling_price || 0, data.is_auto_explode]
         );
         return res.rows[0].id;
     }
@@ -23,6 +23,7 @@ export class RecipeService {
         if (data.sku) { fields.push(`sku = $${idx++}`); values.push(data.sku); }
         if (data.unit) { fields.push(`unit = $${idx++}`); values.push(data.unit); }
         if (data.cost_per_unit !== undefined) { fields.push(`cost_per_unit = $${idx++}`); values.push(data.cost_per_unit); }
+        if (data.selling_price !== undefined) { fields.push(`selling_price = $${idx++}`); values.push(data.selling_price); }
         if (data.min_threshold !== undefined) { fields.push(`min_threshold = $${idx++}`); values.push(data.min_threshold); }
 
         if (fields.length === 0) return;
@@ -88,15 +89,15 @@ export class RecipeService {
     }
 
     // Update Recipe
-    public async updateRecipe(itemId: string, data: { name: string, sku: string, unit: string, ingredients: any[] }) {
+    public async updateRecipe(itemId: string, data: { name: string, sku: string, unit: string, selling_price: number, ingredients: any[] }) {
         const client = await import('../config/db').then(m => m.default.connect());
         try {
             await client.query('BEGIN');
 
             // 1. Update Item Details
             await client.query(
-                'UPDATE items SET name = $1, sku = $2, unit = $3 WHERE id = $4',
-                [data.name, data.sku, data.unit, itemId]
+                'UPDATE items SET name = $1, sku = $2, unit = $3, selling_price = $4 WHERE id = $5',
+                [data.name, data.sku, data.unit, data.selling_price || 0, itemId]
             );
 
             // 2. Get Recipe ID
