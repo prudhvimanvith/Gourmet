@@ -41,30 +41,7 @@ export type CreateRecipeDTO = {
 
 export const api = {
     getItems: async (): Promise<Item[]> => {
-        const res = await fetch(`${endpoints.inventory}/items`); // endpoints.inventory is base/inventory, so this might be wrong if routes are different. Checking api.ts config.
-        // Actually, endpoints in config/api.ts are specific full URLs.
-        // Let's use the BASE URL from config instead or just use the endpoints object correctly.
-        // endpoints.inventory = .../inventory
-        // The original fetch was `${API_URL}/items`.
-        // config/api.ts doesn't have a generic `items` endpoint defined, only `inventory`.
-        // But `routes/api.routes.ts` has `router.get('/items', ...)`
-        // So I should add `items` to config/api.ts or just rely on a function helper.
-
-        // Let's just fix the import and use the BASE first to be safe, or direct replacement.
-        // Re-reading config/api.ts...
-        // login: ..., inventory: .../inventory, recipes: .../recipes
-
-        // Use relative path if possible or re-declare API_URL based on env.
-        // The best approach is to use the same logic as config/api.ts
-
-        const res = await fetch(`${endpoints.inventory}/../items`); // Hacky? No, let's just use the same env var.
-        /* 
-           Better plan: Update this file to use `import.meta.env.VITE_API_URL` directly like config/api.ts
-           OR import the BASE URL from there if exported.
-           config/api.ts does NOT export base url.
-        */
         const res = await fetch(`${import.meta.env.VITE_API_URL || '/api/v1'}/items`);
-
         if (!res.ok) {
             const err = await res.json().catch(() => ({ error: 'Failed to fetch items' }));
             throw new Error(err.error || err.message || 'Failed to fetch items');
