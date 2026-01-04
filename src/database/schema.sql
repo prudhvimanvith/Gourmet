@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS inventory_transactions (
     item_id UUID REFERENCES items(id),
     quantity_change DECIMAL(10, 4) NOT NULL,
     transaction_type VARCHAR(50) NOT NULL, -- SALE, PREP_IN, PREP_OUT, PURCHASE, WASTAGE
-    reference_id UUID,
+    reference_id VARCHAR(255),
     created_at TIMESTAMP DEFAULT NOW()
 );
 
