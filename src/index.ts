@@ -28,7 +28,7 @@ app.get('/', (req, res) => {
 
 import { query } from './config/db';
 
-app.get('/health', async (req, res) => {
+app.get('/api/health', async (req, res) => {
     try {
         await query('SELECT NOW()');
         res.json({
