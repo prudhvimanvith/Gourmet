@@ -9,6 +9,7 @@ export interface Item {
     current_stock: number;
     min_threshold: number;
     cost_per_unit: number;
+    selling_price: number;
     is_auto_explode: boolean;
     created_at: Date;
 }

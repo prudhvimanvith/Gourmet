@@ -7,14 +7,14 @@ interface StatCardProps {
     icon: LucideIcon;
     trend?: string;
     trendUp?: boolean;
-    color: 'emerald' | 'cyan' | 'rose' | 'amber';
+    color: 'primary' | 'cyan' | 'critical' | 'warning';
 }
 
 const colorMap = {
-    emerald: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-    cyan: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
-    rose: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-    amber: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+    primary: 'bg-primary-50 text-primary-600 border-primary-200 ring-1 ring-primary-100',
+    cyan: 'bg-cyan-50 text-cyan-600 border-cyan-200 ring-1 ring-cyan-100',
+    critical: 'bg-red-50 text-red-600 border-red-200 ring-1 ring-red-100',
+    warning: 'bg-amber-50 text-amber-600 border-amber-200 ring-1 ring-amber-100',
 };
 
 const StatCard = ({ title, value, icon: Icon, trend, trendUp, color }: StatCardProps) => {
@@ -22,24 +22,24 @@ const StatCard = ({ title, value, icon: Icon, trend, trendUp, color }: StatCardP
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`relative overflow-hidden rounded-2xl border ${colorMap[color]} p-6 backdrop-blur-sm`}
+            className={`relative overflow-hidden rounded-2xl border ${colorMap[color]} p-6 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow`}
         >
             <div className="flex items-start justify-between">
                 <div>
-                    <p className="text-sm font-medium text-slate-400">{title}</p>
-                    <h3 className="mt-2 text-3xl font-bold font-mono text-slate-100">{value}</h3>
+                    <p className="text-sm font-medium text-slate-500">{title}</p>
+                    <h3 className="mt-2 text-3xl font-bold font-mono text-slate-800">{value}</h3>
                 </div>
-                <div className={`rounded-xl p-3 ${colorMap[color].split(' ')[0]}`}>
+                <div className={`rounded-xl p-3 bg-white/50 backdrop-blur-md`}>
                     <Icon className="h-6 w-6" />
                 </div>
             </div>
 
             {trend && (
                 <div className="mt-4 flex items-center gap-2">
-                    <span className={`text-xs font-bold ${trendUp ? 'text-emerald-400' : 'text-rose-400'}`}>
+                    <span className={`text-xs font-bold ${trendUp ? 'text-primary-600' : 'text-red-500'}`}>
                         {trendUp ? '↑' : '↓'} {trend}
                     </span>
-                    <span className="text-xs text-slate-500">vs last shift</span>
+                    <span className="text-xs text-slate-400">vs last shift</span>
                 </div>
             )}
         </motion.div>

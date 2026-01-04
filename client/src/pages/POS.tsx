@@ -1,32 +1,23 @@
 import { useState } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { api, type Item, type OrderItem } from '../lib/api';
+import { api, type Item } from '../lib/api';
 import MenuGrid from '../components/pos/MenuGrid';
 import CartSidebar from '../components/pos/CartSidebar';
-import { Search } from 'lucide-react';
 
 const POS = () => {
-    const [search, setSearch] = useState('');
     const [cart, setCart] = useState<{ item: Item; qty: number }[]>([]);
+    const [search, setSearch] = useState('');
 
-    // Fetch Items
     const { data: items = [], isLoading } = useQuery({
         queryKey: ['items'],
         queryFn: api.getItems
     });
 
-    // Calculate Deductions (Preview)
-    // In a real app, we might query an endpoint for this, here we imply it visually.
-
-    // Checkout Mutation
-    const checkoutMutation = useMutation({
+    const createOrderMutation = useMutation({
         mutationFn: api.createOrder,
         onSuccess: () => {
-            setCart([]); // Clear cart
-            alert('Order Placed Successfully! Inventory Deducted.');
-        },
-        onError: (err) => {
-            alert('Order Failed: ' + err);
+            alert('Order Processed Successfully!');
+            setCart([]);
         }
     });
 
@@ -44,47 +35,64 @@ const POS = () => {
         setCart(prev => prev.filter(i => i.item.id !== itemId));
     };
 
+    const updateQuantity = (itemId: string, delta: number) => {
+        setCart(prev => {
+            return prev.map(line => {
+                if (line.item.id === itemId) {
+                    const newQty = line.qty + delta;
+                    if (newQty <= 0) return null; // Remove if 0
+                    return { ...line, qty: newQty };
+                }
+                return line;
+            }).filter(Boolean) as { item: Item; qty: number }[];
+        });
+    };
+
     const handleCheckout = () => {
-        const orderItems: OrderItem[] = cart.map(c => ({ itemId: c.item.id, qty: c.qty }));
-        checkoutMutation.mutate(orderItems);
+        createOrderMutation.mutate(
+            cart.map(line => ({ itemId: line.item.id, qty: line.qty }))
+        );
     };
 
     return (
         <div className="flex h-[calc(100vh-2rem)] gap-6 overflow-hidden">
-            {/* Left: Menu Area */}
-            <div className="flex flex-1 flex-col overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/50 backdrop-blur-sm">
-                {/* Top Bar */}
-                <div className="flex items-center justify-between border-b border-slate-800 p-6">
-                    <h1 className="text-2xl font-bold text-slate-100">Menu</h1>
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
-                        <input
-                            type="text"
-                            placeholder="Search dishes..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            className="w-64 rounded-xl border border-slate-700 bg-slate-800 py-2 pl-10 pr-4 text-slate-100 placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
-                        />
-                    </div>
+            {/* Main Content: Menu */}
+            <div className="flex flex-1 flex-col gap-6 overflow-hidden">
+                {/* Search Bar */}
+                <div className="rounded-3xl border border-slate-200 bg-white/70 p-4 backdrop-blur-xl shadow-glass">
+                    <input
+                        type="text"
+                        placeholder="Search menu..."
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-6 py-4 text-lg text-slate-800 placeholder-slate-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-100 outline-none transition-all"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        autoFocus
+                    />
                 </div>
 
                 {/* Grid */}
-                <div className="flex-1 overflow-y-auto p-6">
+                <div className="flex-1 overflow-y-auto rounded-3xl border border-slate-200 bg-white/50 p-6 backdrop-blur-xl shadow-glass-sm">
                     {isLoading ? (
-                        <div className="flex h-full items-center justify-center text-emerald-400">Loading Menu...</div>
+                        <div className="flex flex-col items-center justify-center h-full text-slate-400 animate-pulse">
+                            <span className="text-xl font-medium">Loading Menu...</span>
+                        </div>
                     ) : (
-                        <MenuGrid items={items} search={search} onAddToCart={addToCart} />
+                        <MenuGrid items={items} onAddToCart={addToCart} search={search} />
                     )}
                 </div>
             </div>
 
-            {/* Right: Cart */}
-            <div className="overflow-hidden rounded-3xl border border-slate-800">
+            {/* Sidebar: Cart */}
+            <div className="w-96 overflow-hidden rounded-3xl border border-slate-200 bg-white/80 shadow-2xl backdrop-blur-xl z-20">
                 <CartSidebar
-                    cart={cart}
+                    cart={cart.map(line => ({
+                        ...line,
+                        item: items.find(i => i.id === line.item.id) || line.item
+                    }))}
                     onRemove={removeFromCart}
+                    onUpdateQty={updateQuantity}
                     onCheckout={handleCheckout}
-                    isProcessing={checkoutMutation.isPending}
+                    isProcessing={createOrderMutation.isPending}
                 />
             </div>
         </div>

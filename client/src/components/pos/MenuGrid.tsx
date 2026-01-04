@@ -25,31 +25,31 @@ const MenuGrid = ({ items, onAddToCart, search }: MenuGridProps) => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => onAddToCart(item)}
-                    className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-700 bg-slate-800 p-4 text-left shadow-lg hover:border-emerald-500/50 hover:bg-slate-750 transition-colors"
+                    className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm hover:shadow-neon hover:border-primary-400 transition-all duration-300"
                 >
                     <div>
-                        <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-slate-700/50 text-slate-300">
+                        <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-500 font-bold group-hover:bg-primary-50 group-hover:text-primary-600 transition-colors">
                             {item.name.charAt(0)}
                         </div>
-                        <h3 className="line-clamp-2 font-bold text-slate-100">{item.name}</h3>
-                        <p className="text-xs text-slate-400">{item.sku}</p>
+                        <h3 className="line-clamp-2 font-bold text-slate-800 group-hover:text-primary-700 transition-colors">{item.name}</h3>
+                        <p className="text-xs text-slate-400 font-mono mt-1">{item.sku}</p>
                     </div>
 
                     <div className="mt-4 flex items-center justify-between">
-                        <span className="text-lg font-bold text-emerald-400">$12.00</span> {/* Mock Price */}
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400 opacity-0 transition-opacity group-hover:opacity-100">
+                        <span className="text-lg font-bold text-slate-800">${Number(item.selling_price || 0).toFixed(2)}</span>
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-50 text-primary-500 opacity-0 transition-opacity group-hover:opacity-100 shadow-sm">
                             <Plus className="h-5 w-5" />
                         </div>
                     </div>
 
                     {/* Simulated Stock Fuel Gauge */}
-                    <div className="absolute bottom-0 left-0 h-1 w-full bg-slate-700">
+                    <div className="absolute bottom-0 left-0 h-1 w-full bg-slate-100">
                         <div
                             className={clsx(
                                 "h-full transition-all duration-500",
-                                item.current_stock > 10 ? "bg-emerald-500" : "bg-rose-500"
+                                Number(item.current_stock) > 10 ? "bg-primary-500" : "bg-red-500"
                             )}
-                            style={{ width: `${Math.min(item.current_stock * 10, 100)}%` }} // Logic placeholder
+                            style={{ width: `${Math.min(Number(item.current_stock) * 10, 100)}%` }}
                         />
                     </div>
                 </motion.button>

@@ -4,6 +4,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 
 import apiRoutes from './routes/api.routes';
+import authRoutes from './routes/auth.routes';
 
 // Load environment variables
 dotenv.config();
@@ -18,6 +19,7 @@ app.use(express.json());
 
 // Mount API Routes
 app.use('/api/v1', apiRoutes);
+app.use('/api/v1', authRoutes);
 
 // Routes
 app.get('/', (req, res) => {
@@ -35,7 +37,11 @@ app.get('/health', (req, res) => {
     });
 });
 
-// Start Server
-app.listen(port, () => {
-    console.log(`[server]: Server is running at http://localhost:${port}`);
-});
+// Start Server (Only if not running on Vercel)
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(port, () => {
+        console.log(`[server]: Server is running at http://localhost:${port}`);
+    });
+}
+
+export default app;

@@ -7,6 +7,7 @@ export type Item = {
     unit: string;
     cost_per_unit: number | string; // PG returns numeric as string
     current_stock: number | string;
+    selling_price?: number | string;
     sku: string;
     min_threshold?: number;
     is_auto_explode?: boolean;
@@ -23,6 +24,7 @@ export type CreateItemDTO = {
     type: 'RAW_MATERIAL' | 'INTERMEDIATE' | 'DISH' | 'MODIFIER';
     unit: string;
     cost_per_unit: number;
+    selling_price?: number;
     is_auto_explode: boolean;
 };
 
@@ -40,7 +42,10 @@ export type CreateRecipeDTO = {
 export const api = {
     getItems: async (): Promise<Item[]> => {
         const res = await fetch(`${API_URL}/items`);
-        if (!res.ok) throw new Error('Failed to fetch items');
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({ error: 'Failed to fetch items' }));
+            throw new Error(err.error || err.message || 'Failed to fetch items');
+        }
         return res.json();
     },
 
@@ -50,7 +55,10 @@ export const api = {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ items }),
         });
-        if (!res.ok) throw new Error('Failed to place order');
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({ error: 'Failed to place order' }));
+            throw new Error(err.error || err.message || 'Failed to place order');
+        }
         return res.json();
     },
 
@@ -60,7 +68,10 @@ export const api = {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
         });
-        if (!res.ok) throw new Error('Failed to create item');
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({ error: 'Failed to create item' }));
+            throw new Error(err.error || err.message || 'Failed to create item');
+        }
         return res.json();
     },
 
@@ -70,14 +81,20 @@ export const api = {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
         });
-        if (!res.ok) throw new Error('Failed to create recipe');
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({ error: 'Failed to create recipe' }));
+            throw new Error(err.error || err.message || 'Failed to create recipe');
+        }
         return res.json();
     },
 
     // --- Recipe CRUD ---
     getRecipe: async (itemId: string) => {
         const res = await fetch(`${API_URL}/recipes/${itemId}`);
-        if (!res.ok) throw new Error('Failed to fetch recipe');
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({ error: 'Failed to fetch recipe' }));
+            throw new Error(err.error || err.message || 'Failed to fetch recipe');
+        }
         return res.json();
     },
 
@@ -85,7 +102,10 @@ export const api = {
         const res = await fetch(`${API_URL}/recipes/${itemId}`, {
             method: 'DELETE',
         });
-        if (!res.ok) throw new Error('Failed to delete recipe');
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({ error: 'Failed to delete recipe' }));
+            throw new Error(err.error || err.message || 'Failed to delete recipe');
+        }
         return res.json();
     },
 
@@ -95,17 +115,10 @@ export const api = {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
         });
-        if (!res.ok) throw new Error('Failed to update recipe');
-        return res.json();
-    },
-
-    updateRecipe: async (itemId: string, data: any) => {
-        const res = await fetch(`${API_URL}/recipes/${itemId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data),
-        });
-        if (!res.ok) throw new Error('Failed to update recipe');
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({ error: 'Failed to update recipe' }));
+            throw new Error(err.error || err.message || 'Failed to update recipe');
+        }
         return res.json();
     },
 
@@ -116,7 +129,10 @@ export const api = {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
         });
-        if (!res.ok) throw new Error('Failed to update item');
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({ error: 'Failed to update item' }));
+            throw new Error(err.error || err.message || 'Failed to update item');
+        }
         return res.json();
     },
 
@@ -125,7 +141,10 @@ export const api = {
         const res = await fetch(`${API_URL}/recipes/${itemId}`, {
             method: 'DELETE',
         });
-        if (!res.ok) throw new Error('Failed to delete item');
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({ error: 'Failed to delete item' }));
+            throw new Error(err.error || err.message || 'Failed to delete item');
+        }
         return res.json();
     },
 
@@ -135,7 +154,10 @@ export const api = {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ itemId, change, reason }),
         });
-        if (!res.ok) throw new Error('Failed to adjust stock');
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({ error: 'Failed to adjust stock' }));
+            throw new Error(err.error || err.message || 'Failed to adjust stock');
+        }
         return res.json();
     },
 
@@ -145,7 +167,10 @@ export const api = {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ itemId, quantity }),
         });
-        if (!res.ok) throw new Error('Failed to record prep');
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({ error: 'Failed to record prep' }));
+            throw new Error(err.error || err.message || 'Failed to record prep');
+        }
         return res.json();
     },
 
