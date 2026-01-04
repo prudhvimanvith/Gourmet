@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000/api/v1';
+import { endpoints } from '../config/api';
 
 export type Item = {
     id: string;
@@ -41,7 +41,30 @@ export type CreateRecipeDTO = {
 
 export const api = {
     getItems: async (): Promise<Item[]> => {
-        const res = await fetch(`${API_URL}/items`);
+        const res = await fetch(`${endpoints.inventory}/items`); // endpoints.inventory is base/inventory, so this might be wrong if routes are different. Checking api.ts config.
+        // Actually, endpoints in config/api.ts are specific full URLs.
+        // Let's use the BASE URL from config instead or just use the endpoints object correctly.
+        // endpoints.inventory = .../inventory
+        // The original fetch was `${API_URL}/items`.
+        // config/api.ts doesn't have a generic `items` endpoint defined, only `inventory`.
+        // But `routes/api.routes.ts` has `router.get('/items', ...)`
+        // So I should add `items` to config/api.ts or just rely on a function helper.
+
+        // Let's just fix the import and use the BASE first to be safe, or direct replacement.
+        // Re-reading config/api.ts...
+        // login: ..., inventory: .../inventory, recipes: .../recipes
+
+        // Use relative path if possible or re-declare API_URL based on env.
+        // The best approach is to use the same logic as config/api.ts
+
+        const res = await fetch(`${endpoints.inventory}/../items`); // Hacky? No, let's just use the same env var.
+        /* 
+           Better plan: Update this file to use `import.meta.env.VITE_API_URL` directly like config/api.ts
+           OR import the BASE URL from there if exported.
+           config/api.ts does NOT export base url.
+        */
+        const res = await fetch(`${import.meta.env.VITE_API_URL || '/api/v1'}/items`);
+
         if (!res.ok) {
             const err = await res.json().catch(() => ({ error: 'Failed to fetch items' }));
             throw new Error(err.error || err.message || 'Failed to fetch items');
@@ -50,7 +73,7 @@ export const api = {
     },
 
     createOrder: async (items: OrderItem[]) => {
-        const res = await fetch(`${API_URL}/orders`, {
+        const res = await fetch(`${endpoints.processOrder}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ items }),
@@ -58,12 +81,12 @@ export const api = {
         if (!res.ok) {
             const err = await res.json().catch(() => ({ error: 'Failed to place order' }));
             throw new Error(err.error || err.message || 'Failed to place order');
-        }
+        },
         return res.json();
     },
 
     createItem: async (data: CreateItemDTO) => {
-        const res = await fetch(`${API_URL}/items`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || '/api/v1'}/items`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
@@ -76,7 +99,7 @@ export const api = {
     },
 
     createRecipe: async (data: CreateRecipeDTO) => {
-        const res = await fetch(`${API_URL}/recipes`, {
+        const res = await fetch(`${endpoints.recipes}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
@@ -90,7 +113,7 @@ export const api = {
 
     // --- Recipe CRUD ---
     getRecipe: async (itemId: string) => {
-        const res = await fetch(`${API_URL}/recipes/${itemId}`);
+        const res = await fetch(`${endpoints.recipes}/${itemId}`);
         if (!res.ok) {
             const err = await res.json().catch(() => ({ error: 'Failed to fetch recipe' }));
             throw new Error(err.error || err.message || 'Failed to fetch recipe');
@@ -99,7 +122,7 @@ export const api = {
     },
 
     deleteRecipe: async (itemId: string) => {
-        const res = await fetch(`${API_URL}/recipes/${itemId}`, {
+        const res = await fetch(`${endpoints.recipes}/${itemId}`, {
             method: 'DELETE',
         });
         if (!res.ok) {
@@ -110,7 +133,7 @@ export const api = {
     },
 
     updateRecipe: async (itemId: string, data: any) => {
-        const res = await fetch(`${API_URL}/recipes/${itemId}`, {
+        const res = await fetch(`${endpoints.recipes}/${itemId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
@@ -124,7 +147,7 @@ export const api = {
 
     // --- Item CRUD (Raw Materials) ---
     updateItem: async (itemId: string, data: Partial<Item>) => {
-        const res = await fetch(`${API_URL}/items/${itemId}`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || '/api/v1'}/items/${itemId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
@@ -138,7 +161,7 @@ export const api = {
 
     deleteItem: async (itemId: string) => {
         // We reuse the recipe delete endpoint as it deletes the underlying item
-        const res = await fetch(`${API_URL}/recipes/${itemId}`, {
+        const res = await fetch(`${endpoints.recipes}/${itemId}`, {
             method: 'DELETE',
         });
         if (!res.ok) {
@@ -149,7 +172,7 @@ export const api = {
     },
 
     adjustStock: async (itemId: string, change: number, reason: string) => {
-        const res = await fetch(`${API_URL}/inventory/adjust`, {
+        const res = await fetch(`${endpoints.inventory}/adjust`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ itemId, change, reason }),
@@ -162,7 +185,7 @@ export const api = {
     },
 
     recordPrep: async (itemId: string, quantity: number) => {
-        const res = await fetch(`${API_URL}/prep`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || '/api/v1'}/prep`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ itemId, quantity }),
@@ -175,7 +198,7 @@ export const api = {
     },
 
     getDashboardStats: async (): Promise<DashboardStats> => {
-        const res = await fetch(`${API_URL}/analytics/dashboard`);
+        const res = await fetch(`${endpoints.analytics}/dashboard`);
         if (!res.ok) throw new Error('Failed to fetch dashboard stats');
         return res.json();
     }
