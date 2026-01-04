@@ -26,15 +26,30 @@ app.get('/', (req, res) => {
     res.json({ message: 'Recipe Management System API is running' });
 });
 
-app.get('/health', (req, res) => {
-    res.json({
-        status: 'ok',
-        timestamp: new Date(),
-        services: {
-            database: 'disconnected', // placeholder
-            redis: 'disconnected'     // placeholder
-        }
-    });
+import { query } from './config/db';
+
+app.get('/health', async (req, res) => {
+    try {
+        await query('SELECT NOW()');
+        res.json({
+            status: 'ok',
+            timestamp: new Date(),
+            services: {
+                database: 'connected',
+                environment: process.env.NODE_ENV
+            }
+        });
+    } catch (error: any) {
+        console.error('Health check failed:', error);
+        res.status(500).json({
+            status: 'error',
+            timestamp: new Date(),
+            services: {
+                database: 'disconnected',
+                error: error.message
+            }
+        });
+    }
 });
 
 // Start Server (Only if not running on Vercel)
