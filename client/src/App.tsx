@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import Layout from './components/layout/Layout';
 import Dashboard from './pages/Dashboard';
