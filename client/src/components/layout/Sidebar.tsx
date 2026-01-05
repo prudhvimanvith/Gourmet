@@ -8,7 +8,7 @@ const Sidebar = () => {
     const { user, logout } = useAuth();
 
     const allNavItems = [
-        { icon: LayoutDashboard, label: 'Dashboard', path: '/', roles: ['ADMIN', 'CHEF', 'CASHIER'] },
+        { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard', roles: ['ADMIN', 'CHEF', 'CASHIER'] },
         { icon: Store, label: 'POS Terminal', path: '/pos', roles: ['ADMIN', 'CASHIER'] },
         { icon: ScrollText, label: 'Recipes', path: '/recipes', roles: ['ADMIN', 'CHEF'] },
         { icon: ChefHat, label: 'Kitchen / Prep', path: '/prep', roles: ['ADMIN', 'CHEF'] },

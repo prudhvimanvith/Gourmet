@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import type { ReactNode } from 'react';
 
 import Layout from './components/layout/Layout';
+import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
 import POS from './pages/POS';
 import Login from './pages/Login';
@@ -42,7 +43,11 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/reset-password" element={<ResetPassword />} />
 
-            <Route path="/" element={
+            {/* Public Landing Page */}
+            <Route path="/" element={<Landing />} />
+
+            {/* Protected Dashboard */}
+            <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Layout><Dashboard /></Layout>
               </ProtectedRoute>
