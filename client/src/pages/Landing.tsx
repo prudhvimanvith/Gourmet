@@ -10,9 +10,9 @@ const Landing = () => {
                 <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-2 font-bold text-xl tracking-tight text-slate-900">
                         <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white shadow-lg shadow-primary-500/30">
-                            <ChefHat className="h-5 w-5" />
+                            G
                         </div>
-                        Gourmet
+                        Gourmet POS
                     </div>
                     <Link to="/login">
                         <motion.button

@@ -24,10 +24,10 @@ const Sidebar = () => {
             {/* Brand */}
             <div className="mb-12 flex items-center justify-center gap-3 overflow-hidden whitespace-nowrap px-4">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary-400 to-primary-600 shadow-lg shadow-primary-500/20 text-white">
-                    <ChefHat className="h-6 w-6" />
+                    <span className="text-xl font-bold">G</span>
                 </div>
                 <span className="hidden text-xl font-bold tracking-wider text-slate-800 opacity-0 transition-all group-hover:block group-hover:opacity-100">
-                    GOURMET
+                    GOURMET<span className="text-primary-500">POS</span>
                 </span>
             </div>
 
