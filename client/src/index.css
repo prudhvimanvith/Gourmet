@@ -33,3 +33,25 @@
     @apply bg-slate-50 text-slate-900 font-sans antialiased selection:bg-primary-100 selection:text-primary-700;
   }
 }
+
+@layer utilities {
+  @media print {
+    body * {
+      visibility: hidden;
+    }
+
+    #printable-receipt,
+    #printable-receipt * {
+      visibility: visible;
+    }
+
+    #printable-receipt {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      background: white;
+      z-index: 9999;
+    }
+  }
+}
