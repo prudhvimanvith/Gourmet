@@ -44,9 +44,69 @@ const POS = () => {
         });
     };
 
+    const handlePrint = (items: { item: Item; qty: number }[], total: number, orderId: string) => {
+        const printWindow = window.open('', '', 'width=600,height=600');
+        if (!printWindow) return;
+
+        const date = new Date().toLocaleString();
+
+        const html = `
+            <html>
+                <head>
+                    <title>Receipt</title>
+                    <style>
+                        body { font-family: 'Courier New', monospace; text-align: center; max-width: 300px; margin: 0 auto; }
+                        .header { margin-bottom: 20px; border-bottom: 1px dashed black; padding-bottom: 10px; }
+                        .item { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 14px; }
+                        .total { margin-top: 20px; border-top: 1px dashed black; pt: 10px; font-weight: bold; font-size: 18px; display: flex; justify-content: space-between; }
+                        .footer { margin-top: 30px; font-size: 12px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h2>GOURMET POS</h2>
+                        <p>Order #${orderId.slice(0, 8)}</p>
+                        <p>${date}</p>
+                    </div>
+                    <div class="items">
+                        ${items.map(i => `
+                            <div class="item">
+                                <span>${i.qty} x ${i.item.name}</span>
+                                <span>$${(Number(i.item.selling_price || 0) * i.qty).toFixed(2)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="total">
+                        <span>TOTAL</span>
+                        <span>$${total.toFixed(2)}</span>
+                    </div>
+                    <div class="footer">
+                        <p>Thank you for dining with us!</p>
+                    </div>
+                </body>
+            </html>
+        `;
+
+        printWindow.document.write(html);
+        printWindow.document.close();
+        printWindow.focus();
+        setTimeout(() => {
+            printWindow.print();
+            printWindow.close();
+        }, 250);
+    };
+
     const handleCheckout = () => {
+        const total = cart.reduce((acc, curr) => acc + (Number(curr.item.selling_price || 0) * curr.qty), 0);
+        const cartCopy = [...cart]; // Capture current cart state
+
         createOrderMutation.mutate(
-            cart.map(line => ({ itemId: line.item.id, qty: line.qty }))
+            cart.map(line => ({ itemId: line.item.id, qty: line.qty })),
+            {
+                onSuccess: (data) => {
+                    handlePrint(cartCopy, total, data.orderId || 'NEW');
+                }
+            }
         );
     };
 
