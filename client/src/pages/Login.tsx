@@ -30,7 +30,7 @@ const Login = () => {
         },
         onSuccess: (data) => {
             login(data.token, data.user);
-            navigate('/');
+            navigate('/dashboard');
         },
         onError: (err: any) => {
             setError(err.message);
