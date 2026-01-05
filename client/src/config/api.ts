@@ -13,7 +13,7 @@ export const endpoints = {
 
     // Inventory
     inventory: `${API_BASE_URL}/inventory`,
-    processOrder: `${API_BASE_URL}/inventory/order`,
+    processOrder: `${API_BASE_URL}/orders`,
 
     // Recipes
     recipes: `${API_BASE_URL}/recipes`,
