@@ -12,7 +12,7 @@ const Landing = () => {
                         <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white shadow-lg shadow-primary-500/30">
                             G
                         </div>
-                        Gourmet POS
+                        Gourmet
                     </div>
                     <Link to="/login">
                         <motion.button

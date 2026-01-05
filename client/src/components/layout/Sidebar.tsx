@@ -27,7 +27,7 @@ const Sidebar = () => {
                     <span className="text-xl font-bold">G</span>
                 </div>
                 <span className="hidden text-xl font-bold tracking-wider text-slate-800 opacity-0 transition-all group-hover:block group-hover:opacity-100">
-                    GOURMET<span className="text-primary-500">POS</span>
+                    GOURMET
                 </span>
             </div>
 

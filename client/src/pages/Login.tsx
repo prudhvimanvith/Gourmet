@@ -112,7 +112,7 @@ const Login = () => {
                 </div>
 
                 <p className="text-center text-slate-400 text-sm mt-8 font-medium">
-                    &copy; 2026 GourmetPOS System
+                    &copy; 2026 Gourmet System
                 </p>
 
                 {/* Forgot Password Modal */}
