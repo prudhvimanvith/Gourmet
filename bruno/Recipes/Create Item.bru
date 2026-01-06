@@ -1,0 +1,26 @@
+meta {
+  name: Create Item (Ingredient)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/items
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "Organic Flour",
+    "sku": "FLOUR-001",
+    "type": "RAW_MATERIAL",
+    "unit": "kg",
+    "cost_per_unit": 2.50,
+    "min_threshold": 20
+  }
+}

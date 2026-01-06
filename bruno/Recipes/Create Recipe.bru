@@ -1,0 +1,30 @@
+meta {
+  name: Create Recipe
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/recipes
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "output_item_id": "DISH_UUID_HERE",
+    "batch_size": 1,
+    "instructions": "Mix flour and water. Bake at 200C.",
+    "ingredients": [
+      {
+        "component_item_id": "FLOUR_UUID_HERE",
+        "quantity": 0.5,
+        "wastage_percent": 2
+      }
+    ]
+  }
+}

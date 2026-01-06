@@ -1,0 +1,26 @@
+meta {
+  name: Process Order
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/orders
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "items": [
+      {
+        "itemId": "ITEM_UUID_HERE",
+        "qty": 2
+      }
+    ]
+  }
+}

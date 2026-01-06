@@ -1,0 +1,25 @@
+meta {
+  name: Register User (Admin)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/auth/register
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "username": "chef_mario",
+    "password": "password123",
+    "role": "CHEF",
+    "full_name": "Mario Rossi",
+    "email": "mario@example.com"
+  }
+}

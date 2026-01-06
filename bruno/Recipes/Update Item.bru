@@ -1,0 +1,22 @@
+meta {
+  name: Update Item
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/items/ITEM_UUID_HERE
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "cost_per_unit": 3.00,
+    "min_threshold": 15
+  }
+}

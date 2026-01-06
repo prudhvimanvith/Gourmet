@@ -1,0 +1,26 @@
+meta {
+  name: Update Recipe
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{baseUrl}}/recipes/DISH_UUID_HERE
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+      "ingredients": [
+      {
+        "component_item_id": "FLOUR_UUID_HERE",
+        "quantity": 0.6
+      }
+    ]
+  }
+}

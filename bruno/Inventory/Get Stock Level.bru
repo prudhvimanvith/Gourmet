@@ -1,0 +1,15 @@
+meta {
+  name: Get Stock Level
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/inventory/ITEM_UUID_HERE
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
