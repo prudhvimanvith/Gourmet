@@ -85,7 +85,7 @@ const CartSidebar = ({ cart, onUpdateQty, onCheckout, isProcessing }: CartSideba
                     disabled={cart.length === 0 || isProcessing}
                     className="group flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 py-4 font-bold text-white shadow-lg shadow-primary-500/25 transition-all hover:shadow-primary-500/40 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 >
-                    {isProcessing ? 'Processing...' : 'Charge & Print'}
+                    {isProcessing ? 'Processing...' : 'Place Order'}
                     {!isProcessing && <ChevronRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />}
                 </button>
             </div>
