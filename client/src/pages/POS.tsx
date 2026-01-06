@@ -76,7 +76,7 @@ const POS = () => {
 
     return (
         <>
-            <div className="flex h-[calc(100vh-2rem)] gap-6 overflow-hidden print:hidden">
+            <div className="flex h-[calc(100vh-2rem)] gap-6 overflow-hidden">
                 {/* Main Content: Menu */}
                 <div className="flex flex-1 flex-col gap-6 overflow-hidden">
                     {/* Search Bar */}
