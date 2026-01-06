@@ -32,43 +32,93 @@ export class RecipeService {
         await query(`UPDATE items SET ${fields.join(', ')} WHERE id = $${idx}`, values);
     }
 
-    // Create a Recipe for an Item
-    public async createRecipe(data: Omit<Recipe, 'id' | 'is_active' | 'ingredients'> & { ingredients: Omit<RecipeIngredient, 'id' | 'recipe_id'>[] }): Promise<string> {
-        // Start transaction? For simplicity using single queries but ideally invalid if Ingredients fail
+    // --- Helper to Calculate and Update Recipe Cost ---
+    private async recalculateRecipeCost(recipeId: string, client?: any) {
+        const db = client || await import('../config/db').then(m => m.default);
 
-        // 1. Create Header
-        const res = await query(
-            `INSERT INTO recipes (output_item_id, batch_size, instructions) 
-       VALUES ($1, $2, $3) RETURNING id`,
-            [data.output_item_id, data.batch_size, data.instructions]
+        // 1. Get Recipe Ingredients with their constituent costs
+        const res = await db.query(
+            `SELECT ri.quantity, ri.wastage_percent, i.cost_per_unit, r.output_item_id, r.batch_size
+             FROM recipe_ingredients ri
+             JOIN items i ON ri.component_item_id = i.id
+             JOIN recipes r ON ri.recipe_id = r.id
+             WHERE ri.recipe_id = $1`,
+            [recipeId]
         );
-        const recipeId = res.rows[0].id;
 
-        // 2. Add Ingredients
-        for (const ing of data.ingredients) {
-            await query(
-                `INSERT INTO recipe_ingredients (recipe_id, component_item_id, quantity, wastage_percent)
-         VALUES ($1, $2, $3, $4)`,
-                [recipeId, ing.component_item_id, ing.quantity, ing.wastage_percent]
-            );
+        if (res.rows.length === 0) return;
+
+        const outputItemId = res.rows[0].output_item_id;
+        const batchSize = res.rows[0].batch_size || 1;
+
+        // 2. Sum up total cost
+        let totalBatchCost = 0;
+        for (const row of res.rows) {
+            const rawCost = Number(row.cost_per_unit || 0);
+            const qty = Number(row.quantity);
+            const waste = Number(row.wastage_percent || 0);
+
+            // Effective Qty needed including waste
+            const inputQty = qty * (1 + (waste / 100));
+            totalBatchCost += (rawCost * inputQty);
         }
 
-        return recipeId;
+        const costPerUnit = totalBatchCost / batchSize;
+
+        // 3. Update the Output Item
+        console.log(`Updated Cost for Item ${outputItemId}: ${costPerUnit.toFixed(2)}`);
+        await db.query('UPDATE items SET cost_per_unit = $1 WHERE id = $2', [costPerUnit, outputItemId]);
     }
+
+    public async createRecipe(data: Omit<Recipe, 'id' | 'is_active' | 'ingredients'> & { ingredients: Omit<RecipeIngredient, 'id' | 'recipe_id'>[] }): Promise<string> {
+        const client = await import('../config/db').then(m => m.default.connect());
+        try {
+            await client.query('BEGIN');
+
+            // 1. Create Header
+            const res = await client.query(
+                `INSERT INTO recipes (output_item_id, batch_size, instructions) 
+                VALUES ($1, $2, $3) RETURNING id`,
+                [data.output_item_id, data.batch_size, data.instructions]
+            );
+            const recipeId = res.rows[0].id;
+
+            // 2. Add Ingredients
+            for (const ing of data.ingredients) {
+                await client.query(
+                    `INSERT INTO recipe_ingredients (recipe_id, component_item_id, quantity, wastage_percent)
+                    VALUES ($1, $2, $3, $4)`,
+                    [recipeId, ing.component_item_id, ing.quantity, ing.wastage_percent]
+                );
+            }
+
+            // 3. Recalculate Cost
+            await this.recalculateRecipeCost(recipeId, client);
+
+            await client.query('COMMIT');
+            return recipeId;
+        } catch (e) {
+            await client.query('ROLLBACK');
+            throw e;
+        } finally {
+            client.release();
+        }
+    }
+
+    // ... (getItems left as is) ...
 
     public async getItems(): Promise<Item[]> {
         const res = await query('SELECT * FROM items ORDER BY name');
         return res.rows;
     }
 
-    // --- New CRUD Methods ---
-
-    // Get Full Recipe Details
     public async getRecipeDetails(itemId: string): Promise<Recipe | null> {
         const recipeRes = await query('SELECT * FROM recipes WHERE output_item_id = $1', [itemId]);
         if (recipeRes.rows.length === 0) return null;
 
         const recipe = recipeRes.rows[0];
+        // Recalculate on read just in case? No, flawed. Should rely on stored.
+
         const ingredientsRes = await query(
             `SELECT ri.*, i.name, i.sku, i.unit, i.cost_per_unit
              FROM recipe_ingredients ri
@@ -80,15 +130,12 @@ export class RecipeService {
         return { ...recipe, ingredients: ingredientsRes.rows };
     }
 
-    // Delete Recipe (and the Output Item)
+    // ... (deleteRecipe left as is) ...
+
     public async deleteRecipe(itemId: string) {
-        // Cascade should handle foreign keys, but let's be safe.
-        // If we delete the ITEM, the RECIPE and INGREDIENTS should go if FKs are set to CASCADE.
-        // Assuming schema.sql set ON DELETE CASCADE.
         await query('DELETE FROM items WHERE id = $1', [itemId]);
     }
 
-    // Update Recipe
     public async updateRecipe(itemId: string, data: { name: string, sku: string, unit: string, selling_price: number, ingredients: any[] }) {
         const client = await import('../config/db').then(m => m.default.connect());
         try {
@@ -115,6 +162,9 @@ export class RecipeService {
                     [recipeId, ing.component_item_id, ing.quantity, ing.wastage_percent]
                 );
             }
+
+            // 4. Recalculate Cost
+            await this.recalculateRecipeCost(recipeId, client);
 
             await client.query('COMMIT');
         } catch (err) {

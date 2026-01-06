@@ -170,13 +170,32 @@ export class InventoryService {
         try {
             await client.query('BEGIN');
 
+            let totalOrderAmount = 0;
+
             for (const entry of items) {
+                // 1. Get Item Price
+                const itemRes = await client.query('SELECT selling_price FROM items WHERE id = $1', [entry.itemId]);
+                const price = Number(itemRes.rows[0]?.selling_price || 0);
+                totalOrderAmount += (price * entry.qty);
+
+                // 2. Insert Order Item
+                await client.query(
+                    'INSERT INTO order_items (order_id, item_id, quantity, price_at_sale) VALUES ($1, $2, $3, $4)',
+                    [orderId, entry.itemId, entry.qty, price]
+                );
+
+                // 3. Deduct Stock
                 await this.deductStock(client, entry.itemId, entry.qty, orderId);
             }
 
-            await client.query('UPDATE orders SET status = $1 WHERE id = $2', ['COMPLETED', orderId]);
+            // 4. Update Order Total and Status
+            await client.query(
+                'UPDATE orders SET status = $1, total_amount = $2 WHERE id = $3',
+                ['COMPLETED', totalOrderAmount, orderId]
+            );
+
             await client.query('COMMIT');
-            console.log(`Order ${orderId} processed successfully.`);
+            console.log(`Order ${orderId} processed successfully. Total: $${totalOrderAmount}`);
         } catch (err) {
             await client.query('ROLLBACK');
             console.error(`Order processing failed:`, err);
